@@ -1,6 +1,7 @@
 import MetodosGenerales
 class Menu():
     def main():
+        inventario_main = []
         cola = []
         metodos_obj  = MetodosGenerales.MetodosGenerales()
         #menu 
@@ -23,12 +24,11 @@ class Menu():
             
             
             if opt == 1:
-                inventario_main = []
                 inventario_main = metodos_obj.ingresar_datos()
             elif opt == 2:
-                metodos_obj.prestar_equipo(inventario_main)
+                metodos_obj.prestar_equipo(inventario_main, cola)
             elif opt == 3:
-                metodos_obj.modificar_datos(inventario_main, cola)
+                metodos_obj.modificar_equipo(inventario_main, cola)
             elif opt == 4:
                 print("Saliendo del sistema... Chao")
                 break

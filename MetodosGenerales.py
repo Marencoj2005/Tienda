@@ -36,15 +36,15 @@ class MetodosGenerales():
                 table_obj = Tablet.Tablet()
                 print("Ingrese la referencia de la tablet")
                 table_obj.set_referencia(input())
-                # for i in inventario:
-                #     if i.get_referencia() == table_obj.get_referencia(): #accede al atrubuto del elemento
-                #         #while
-                #         while True:
-                #             print("La referencia ya existe")
-                #             print("Ingrese nuevamente la referencia de la tablet")
-                #             table_obj.set_referencia(input())
-                #             if table_obj.get_referencia() != i.get_referencia():
-                #                 break                            
+                
+                while True:
+                   objeto_inventario = inventario.pop(0) #desapila el objeto
+                   if objeto_inventario.get_referencia() == table_obj.get_referencia():
+                       print("Esta referencia ya existe, ingrese una diferente")
+                       table_obj.set_referencia(input())
+                   else:
+                        break
+                                     
                               
                 print("Ingrese la marca de la tablet") # se está saliendo del bucle for
                 table_obj.set_marca(input())
@@ -71,238 +71,229 @@ class MetodosGenerales():
                 break #rompe el ciclo para salir del metodo y retorne el inventario
         return inventario
     
-    def prestar_equipo(self, inventario):
-        cola_prestamos = []
-        #ingrese los datos del equipo a presta
-        #Nesesito verificar si hay equipos disponibles
+    def prestar_equipo(self, inventario, cola_prestamos):
         while True:
-            if len(inventario) == 0:
-                print("NO HAY EQUIPOS DISPONIBLES")
-            else:
-                print("")
-                print("Estos equipos están disponibles")
-                for item in inventario:
-                    print(item)
-                print("")
-                print("Seleccione la referencia a prestar")
-                referencia_prestamo = input()
-                for item in inventario: #accede al __str__ de las clases para imprimir
-                    #verifica si el equipo está disponible
-                    if referencia_prestamo == item.get_referencia():
-                        print("Nombre de la persona al que se la va a prestar el equipo")
-                        item.set_nombre_usuario(input())
-                        item.set_disponible(False)
-                        cola_prestamos.append(item)
-                        print("Equipo prestado")
-                        print(item)
-                if len(inventario) != 0:
-                    print("Desea Prestar otro equipo? \n" \
-                          "[1] Si\n" \
-                          "[2] No")
-                    while True: #manejara el error
-                        try:
-                            opt = int(input())
-                            break #rome el ciclo
-                        except ValueError:
-                            print("Opción no válida, intente nuevamente")
-                        
-                        if opt == 1:
-                            for item in inventario: #accede al __str__ de las clases para imprimir
-                                 #verifica si el equipo está disponible
-                                if referencia_prestamo == item.get_referencia():
-                                    print("Nombre de la persona al que se la va a prestar el equipo")
-                                    item.set_nombre_usuario(input())
-                                    item.set_disponible(False)
-                                    cola_prestamos.append(item)
-                                    print("Equipo prestado")
-                                    print(item)
-                        else:
-                            print("No se prestara otro equipo")
-                            break
-                else:
-                    print("No hay equipos disponibles para prestar")
+            print("\n--- MENÚ DE PRÉSTAMOS ---")
+            if not inventario:
+                print("¡NO HAY EQUIPOS DISPONIBLES!")
+                return inventario, cola_prestamos
+            
+            # Mostrar equipos disponibles
+            print("\nEquipos disponibles:")
+            for idx, item in enumerate(inventario, 1):
+                if item.get_disponible():
+                    print(f"\n[{idx}] {item}")
+            
+            # Selección de referencia
+            referencia = input("\nIngrese la referencia del equipo a prestar (o '0' para salir): ").strip()
+            if referencia == '0':
+                print("Saliendo del menú de préstamos...")
+                return inventario, cola_prestamos
+            
+            # Buscar equipo
+            equipo_encontrado = None
+            for item in inventario:
+                if item.get_referencia() == referencia and item.get_disponible():
+                    equipo_encontrado = item
                     break
-                
-        return inventario, cola_prestamos
+            
+            if not equipo_encontrado:
+                print("\n¡Error! Referencia no encontrada o equipo no disponible")
+                continue
+            
+            # Proceso de préstamo
+            print("\nDATOS DEL PRÉSTAMO")
+            nombre = input("Nombre del receptor: ").strip()
+            while not nombre:
+                print("¡El nombre no puede estar vacío!")
+                nombre = input("Nombre del receptor: ").strip()
+            
+            # Actualizar datos
+            equipo_encontrado.set_nombre_usuario(nombre)
+            equipo_encontrado.set_disponible(False)
+            inventario.remove(equipo_encontrado)
+            cola_prestamos.append(equipo_encontrado)
+            
+            print("\n¡Préstamo exitoso!")
+            print(equipo_encontrado)
+            
+            # Opción para nuevo préstamo
+            while True:
+                continuar = input("\n¿Desea hacer otro préstamo? (S/N): ").strip().upper()
+                if continuar in ['S', 'N']:
+                    break
+                print("¡Opción inválida! Solo S/N")
+            
+            if continuar == 'N':
+                print("Regresando al menú principal...")
+                return inventario, cola_prestamos
     
-    def modificar_datos(self, inventario, cola_prestamos):
+    def modificar_equipo(self ,inventario, cola_prestamos):
         while True:
-            print("¿Que equipo desea modificar?")
+            print("\n¿Qué equipo desea modificar?")
             print("[1] Computador")
             print("[2] Tablet")
             print("[3] Salir")
-            while True: #maneja el error de la opción
+            
+            # Manejar entrada del menú principal
+            while True:
                 try:
-                    opt = int(input())
+                    opt = int(input("Opción: "))
                     break
                 except ValueError:
-                    print("Opción no válida, intente nuevamente")
+                    print("Opción no válida, intente nuevamente.")
+            
             if opt == 1:
-                print("Que desea hacer")
-                print("[1] Cambiar el nombre del usuario")
-                print("[2] Cambiar el precio por hora")
-                print("[3] Cambiar la referencia")
-                print("[4] Cambiar la marca")
-                print("[6] Se devolvió un equipo")
-                print("[7] Salir")
-                
-                opt = int(input())
-                #manejo de errores
-                while True: #maneja el error de la opción
-                    try:
-                        opt = int(input())
-                        break
-                    except ValueError:
-                        print("Opción no válida, intente nuevamente")
-                if opt == 1:
-                    print("Ingrese la referencia del equipo")
-                    referencia = input()
+                while True:  # Submenú de Computador
+                    print("\n¿Qué desea hacer?")
+                    print("[1] Cambiar el nombre del usuario")
+                    print("[2] Cambiar el precio por hora")
+                    print("[3] Cambiar la marca")
+                    print("[4] Cambiar la RAM")
+                    print("[5] Se devolvió un equipo")
+                    print("[6] Volver al menú principal")
+                    
+                    # Manejar entrada del submenú
+                    while True:
+                        try:
+                            sub_opt = int(input("Opción: "))
+                            if 1 <= sub_opt <= 6:
+                                break
+                            else:
+                                print("Opción fuera de rango.")
+                        except ValueError:
+                            print("Opción no válida.")
+                    
+                    if sub_opt == 6:
+                        break  # Salir del submenú
+                    
+                    referencia = input("Ingrese la referencia del equipo: ")
+                    encontrado = False
+                    
+                    # Buscar el equipo en inventario
                     for item in inventario:
-                        if referencia == item.get_referencia():
-                            print("Ingrese el nuevo nombre del usuario")
-                            item.set_nombre_usuario(input())
-                            print("Nombre de usuario cambiado")
-                            print(item)
-                if opt == 2:
-                    print("Ingrese la referencia del equipo")
-                    referencia = input()
+                        if item.get_referencia() == referencia:
+                            encontrado = True
+                            if sub_opt == 1:
+                                nuevo_nombre = input("Ingrese el nuevo nombre del usuario: ")
+                                item.set_nombre_usuario(nuevo_nombre)
+                                print("Nombre actualizado.")
+                            elif sub_opt == 2:
+                                while True:
+                                    try:
+                                        nuevo_precio = float(input("Nuevo precio por hora: "))
+                                        item.set_precio_hora(nuevo_precio)
+                                        break
+                                    except ValueError:
+                                        print("Debe ingresar un número válido.")
+                            elif sub_opt == 3:
+                                nueva_marca = input("Ingrese la nueva marca: ")
+                                item.set_marca(nueva_marca)
+                            elif sub_opt == 4:
+                                while True:
+                                    try:
+                                        nueva_ram = int(input("Nuevo tamaño de RAM (GB): "))
+                                        item.set_tamano_ram(nueva_ram)
+                                        break
+                                    except ValueError:
+                                        print("Debe ingresar un número entero.")
+                            elif sub_opt == 5:
+                                # Buscar en préstamos
+                                encontrado_prestamo = False
+                                temp = []
+                                while cola_prestamos:
+                                    equipo = cola_prestamos.pop(0)
+                                    if equipo.get_referencia() == referencia:
+                                        inventario.append(equipo)
+                                        encontrado_prestamo = True
+                                        break
+                                    else:
+                                        temp.append(equipo)
+                                cola_prestamos.extend(temp)
+                                if encontrado_prestamo:
+                                    print("Equipo devuelto al inventario.")
+                                else:
+                                    print("Equipo no encontrado en préstamos.")
+                            
+                            print(item)  # Mostrar cambios
+                            break  # Salir del for
+                    
+                    if not encontrado:
+                        print("Equipo no encontrado en inventario.")
+            
+            elif opt == 2:
+                while True:  # Submenú de Tablet
+                    print("\n¿Qué desea hacer?")
+                    print("[1] Cambiar el nombre del usuario")
+                    print("[2] Cambiar el precio por hora")
+                    print("[3] Cambiar la marca")
+                    print("[4] Se devolvió un equipo")
+                    print("[5] Volver al menú principal")
+                    
+                    # Manejar entrada del submenú
+                    while True:
+                        try:
+                            sub_opt = int(input("Opción: "))
+                            if 1 <= sub_opt <= 5:
+                                break
+                            else:
+                                print("Opción fuera de rango.")
+                        except ValueError:
+                            print("Opción no válida.")
+                    
+                    if sub_opt == 5:
+                        break  # Salir del submenú
+                    
+                    referencia = input("Ingrese la referencia de la tablet: ")
+                    encontrado = False
+                    
+                    # Buscar el equipo en inventario
                     for item in inventario:
-                        if referencia == item.get_referencia():
-                            print("Ingrese el nuevo precio por hora")
-                            item.set_precio_hora(input())
-                            print("Precio cambiado")
-                            print(item)
-                
-                elif opt == 3:
-                        print("Ingrese la referencia del equipo")
-                        referencia = input()
-                        for item in inventario:
-                            if referencia == item.get_referencia():
-                                print("Ingrese la nueva referencia")
-                                item.set_referencia(input())
-                                print("Referencia cambiada")
-                                print(item)
-                elif opt == 4:
-                        print("Ingrese la referencia del equipo")
-                        referencia = input()
-                        for item in inventario:
-                            if referencia == item.get_referencia():
-                                print("Ingrese la nueva marca")
-                                item.set_marca(input())
-                                print("Marca cambiada")
-                                print(item)
-                elif opt == 5:
-                        print("Ingrese la referencia del equipo")
-                        referencia = input()
-                        for item in inventario:
-                            if referencia == item.get_referencia():
-                                print("Ingrese el nuevo tamaño de la RAM")
-                                item.set_tamano_ram(input())
-                                print("Tamaño de RAM cambiado")
-                                print(item)
-                elif opt == 6:
-                        print("Ingrese la referencia del equipo")
-                        referencia = input()
-                        for item in inventario:
-                            if referencia == item.get_referencia():
-                                print("Ingrese el nuevo estado de disponibilidad (True/False)")
-                                item.set_disponible(input().lower() == 'true')
-                                print("Disponibilidad cambiada")
-                                print(item)
-                elif opt == 7:
-                        print("Ingrese la referencia del equipo")
-                        referencia = input()
-                        for item in inventario:
-                            if referencia == item.get_referencia():
-                                print("Ingrese el nuevo nombre del usuario")
-                                item.set_nombre_usuario(input())
-                                print("Nombre de usuario cambiado")
-                                print(item)
-                elif opt == 8:
-                        print("Ingrese la referencia del equipo")
-                        referencia = input()
-                        for item in inventario:
-                            if referencia == item.get_referencia():
-                                print("Ingrese el nuevo precio por hora")
-                                item.set_precio_hora(input())
-                                print("Precio por hora cambiado")
-                                print(item)
-                elif opt == 9:
-                        print("Saliendo del menú de modificación")
-                        break
-            elif 2:
-                print("Que desea hacer")
-                print("[1] Cambiar el nombre del usuario")
-                print("[2] Cambiar el precio por hora")
-                print("[3] Cambiar la referencia")
-                print("[4] Cambiar la marca")
-                print("[5] Cambiar el tamaño de la RAM")
-                print("[6] Se devolvió un equipo")
-                print("[7] Salir")
-                
-                opt = int(input())
-                #manejo de errores
-                while True:
-                    try:
-                        opt = int(input())
-                        break
-                    except ValueError:
-                        print("Opción no válida, intente nuevamente")
-                if opt == 1:
-                    print("Ingrese la referencia de la tablet")
-                    referencia = input()
-                    for item in inventario:
-                        if referencia == item.get_referencia():
-                            print("Ingrese el nuevo nombre del usuario")
-                            item.set_nombre_usuario(input())
-                            print("Nombre de usuario cambiado")
-                            print(item)
-                elif opt == 2:
-                    print("Ingrese la referencia de la tablet")
-                    referencia = input()
-                    for item in inventario:
-                        if referencia == item.get_referencia():
-                            print("Ingrese el nuevo precio por hora")
-                            item.set_precio_hora(input())
-                            print("Precio cambiado")
-                            print(item)
-                elif opt == 3:
-                    print("Ingrese la referencia de la tablet")
-                    referencia = input()
-                    for item in inventario:
-                        if referencia == item.get_referencia():
-                            print("Ingrese la nueva referencia")
-                            item.set_referencia(input())
-                            print("Referencia cambiada")
-                            print(item)
-                elif opt == 4:
-                    print("Ingrese la referencia de la tablet")
-                    referencia = input()
-                    for item in inventario:
-                        if referencia == item.get_referencia():
-                            print("Ingrese la nueva marca")
-                            item.set_marca(input())
-                            print("Marca cambiada")
-                            print(item)
-                elif opt == 6:
-                    print("Ingrese la referencia de la tablet")
-                    referencia = input()
-                    cola_auxiliar=[]
-                    for item in cola_prestamos:
-                        if referencia == item.get_referencia():
-                            inventario.append(cola_prestamos.pop(0)) #agrega la tablet a la lista de inventario
-                            item.set_disponible(True)
-                            item.set_nombre_usuario(None)
-                            print("Disponibilidad cambiada")
-                        else:
-                            cola_auxiliar.append(cola_prestamos.pop(0))
-                elif opt == 7:
-                    print("Saliendo del menú de modificación")
-                    break
-            else:
-                print("Chao")
+                        if item.get_referencia() == referencia:
+                            encontrado = True
+                            if sub_opt == 1:
+                                nuevo_nombre = input("Ingrese el nuevo nombre del usuario: ")
+                                item.set_nombre_usuario(nuevo_nombre)
+                            elif sub_opt == 2:
+                                while True:
+                                    try:
+                                        nuevo_precio = float(input("Nuevo precio por hora: "))
+                                        item.set_precio_hora(nuevo_precio)
+                                        break
+                                    except ValueError:
+                                        print("Debe ingresar un número válido.")
+                            elif sub_opt == 3:
+                                nueva_marca = input("Ingrese la nueva marca: ")
+                                item.set_marca(nueva_marca)
+                            elif sub_opt == 4:
+                                # Buscar en préstamos
+                                encontrado_prestamo = False
+                                temp = []
+                                while cola_prestamos:
+                                    equipo = cola_prestamos.pop(0)
+                                    if equipo.get_referencia() == referencia:
+                                        inventario.append(equipo)
+                                        encontrado_prestamo = True
+                                        break
+                                    else:
+                                        temp.append(equipo)
+                                cola_prestamos.extend(temp)
+                                if encontrado_prestamo:
+                                    print("Equipo devuelto al inventario.")
+                                else:
+                                    print("Equipo no encontrado en préstamos.")
+                            
+                            print(item)  # Mostrar cambios
+                            break  # Salir del for
+                    
+                    if not encontrado:
+                        print("Tablet no encontrada en inventario.")
+            
+            elif opt == 3:
+                print("Saliendo del sistema...")
                 break
             
-            return inventario
-                
-            
+            else:
+                print("Opción inválida, intente nuevamente.")
+        
+        return inventario
