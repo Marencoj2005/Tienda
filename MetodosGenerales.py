@@ -92,7 +92,7 @@ class MetodosGenerales():
             
             # Buscar equipo
             equipo_encontrado = None
-            for item in inventario:
+            for item in reversed(inventario):
                 if item.get_referencia() == referencia and item.get_disponible():
                     equipo_encontrado = item
                     break
@@ -171,7 +171,7 @@ class MetodosGenerales():
                     encontrado = False
                     
                     # Buscar el equipo en inventario
-                    for item in inventario:
+                    for item in reversed(inventario):
                         if item.get_referencia() == referencia:
                             encontrado = True
                             if sub_opt == 1:
@@ -248,7 +248,7 @@ class MetodosGenerales():
                     encontrado = False
                     
                     # Buscar el equipo en inventario
-                    for item in inventario:
+                    for item in reversed(inventario):
                         if item.get_referencia() == referencia:
                             encontrado = True
                             if sub_opt == 1:
