@@ -1,10 +1,11 @@
 class Tablet():
-    def __init__(self, disponible =None, marca=None, referencia=None, nombre_usuario=None, precio_hora=None):
+    def __init__(self, disponible =None, marca=None, referencia=None, nombre_usuario=None, precio_hora=None, tamano_ram=None):
         self._disponible = disponible
         self._marca = marca
         self._referencia = referencia
         self._nombre_usuario = nombre_usuario
         self._precio_hora = precio_hora
+        self._tamano_ram = tamano_ram
 
     def get_disponible(self):
         return self._disponible
@@ -35,3 +36,11 @@ class Tablet():
 
     def set_precio_hora(self, value):
         self._precio_hora = value
+    
+    def get_tamano_ram(self):
+        return self._tamano_ram
+    def set_tamano_ram(self, value):
+        self._tamano_ram = value
+        
+    def __str__(self):
+        return f"Tablet -- Referencia: {self._referencia}, Marca: {self._marca}, Precio: {self._precio_hora}, Disponible: {self._disponible}"

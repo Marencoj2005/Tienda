@@ -42,3 +42,6 @@ class Computador():
         return self._marca
     def set_marca(self, marca):
         self._marca = marca
+
+    def __str__(self):
+        return f"Computador --> Referencia: {self._referencia}, Marca: {self._marca}, RAM: {self._tamano_ram}, Precio/hora: {self._precio_hora}"
